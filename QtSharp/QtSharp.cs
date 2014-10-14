@@ -148,6 +148,7 @@ namespace QtSharp
 			driver.Options.GeneratorKind = GeneratorKind.CSharp;
 		    string qtModule = "Qt" + this.module;
             driver.Options.addDefines("_WIN32");
+            driver.Options.addDefines("_X86_"); // Needed when using Qt with MinGW, but Clang compiled with Visual Studio.
 		    driver.Options.MicrosoftMode = false;
             driver.Options.TargetTriple = this.target;
             driver.Options.Abi = CppAbi.Itanium;
