@@ -5,10 +5,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using QtCore;
 
 namespace QtSerialPort
 {
-    public unsafe partial class QSerialPort : IDisposable
+    public unsafe partial class QSerialPort : QIODevice, IDisposable
     {
         [StructLayout(LayoutKind.Explicit, Size = 12)]
         public partial struct Internal
@@ -533,6 +534,16 @@ namespace QtSerialPort
             }
         }
 
+        protected override unsafe long ReadData(char* data, long maxlen)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override unsafe long WriteData(string data, long len)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// <para>Sets the port stored in the serial port info instance
         /// serialPortInfo.</para>
@@ -686,7 +697,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.PortName_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }
@@ -1154,7 +1165,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.PortName_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }
@@ -1168,7 +1179,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.SystemLocation_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }
@@ -1183,7 +1194,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.Description_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }
@@ -1198,7 +1209,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.Manufacturer_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }
@@ -1215,7 +1226,7 @@ namespace QtSerialPort
         {
             get
             {
-                var __ret = new QString.Internal();
+                var __ret = new QtCore.QString.Internal();
                 Internal.SerialNumber_0(new IntPtr(&__ret), __Instance);
                 return Marshal.PtrToStringUni(new IntPtr(new QString(__ret).Utf16));
             }

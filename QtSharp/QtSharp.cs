@@ -193,6 +193,10 @@ namespace QtSharp
                 driver.Options.CodeFiles.Add(Path.Combine(dir, "QObject.cs"));
                 driver.Options.CodeFiles.Add(Path.Combine(dir, "MarshalQString.cs"));
 		    }
+		    if (this.module != "Core")
+		    {
+                driver.Options.DependentNameSpaces.Add("QtCore");
+		    }
 		}
 
 		public void SetupPasses(Driver driver)
