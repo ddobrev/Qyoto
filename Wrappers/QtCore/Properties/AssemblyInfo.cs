@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 
 // Allow other Qt Assemblies freind level access to the class's within QtCore
-[assembly: InternalsVisibleTo("QtGui")]
+[assembly: InternalsVisibleTo("QtGUI")]
 [assembly: InternalsVisibleTo("QtSerialPort")]
 // TODO Add additional assemblies here
 
