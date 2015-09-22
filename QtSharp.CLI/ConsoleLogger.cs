@@ -5,59 +5,69 @@ namespace QtSharp.CLI
 {
     public class ConsoleLogger
     {
-        /// <summary> Original Console Output Stream. </summary>
-        /// <value> Original Console Output Stream. </value>
-        public TextWriter ConsoleStdOutput { get; set; }
 
         /// <summary> Original Console Output Stream. </summary>
         /// <value> Original Console Output Stream. </value>
-        public TextWriter ConsoleErrOutput { get; set; }
+        public TextWriter ConsoleStdOutput;
+
+        /// <summary> Original Console Output Stream. </summary>
+        /// <value> Original Console Output Stream. </value>
+        public TextWriter ConsoleErrOutput;
 
         /// <summary> Path to the Log File. </summary>
         /// <value> Path to the Log File. </value>
-        public string LogFilePath {
-            get { return _LogFilePath; }
+        public string LogFilePath
+        {
+            get
+            {
+                return logFilePath;
+            }
         }
-        protected string _LogFilePath;
+        protected string logFilePath;
 
         /// <summary> Filestream used for output. </summary>
-        protected FileStream _fstream;
+        protected FileStream fstream;
 
         /// <summary> Filestream Writer used for output. </summary>
-        protected StreamWriter _fstreamwriter;
+        protected StreamWriter fstreamwriter;
 
         /// <summary> Default constructor. </summary>
-        public ConsoleLogger() {
+        public ConsoleLogger()
+        {
             ConsoleStdOutput = Console.Out;
             ConsoleErrOutput = Console.Error;
-            _LogFilePath = null;
+            logFilePath = null;
         }
 
         /// <summary> Sets the log file output. </summary>
         /// <param name="filename"> Filename of the log file to use. </param>
-        public void SetLogFile(string filename) {
-            _LogFilePath = Path.Combine("logs", filename);
+        public void SetLogFile(string filename)
+        {
+            logFilePath = Path.Combine("logs", filename);
         }
 
         /// <summary> Starts console redirection. </summary>
-        public void Start() {
+        public void Start()
+        {
             Stop();
-            _fstream = new FileStream(_LogFilePath, FileMode.Create);
-            _fstreamwriter = new StreamWriter(_fstream);
-            Console.SetOut(_fstreamwriter);
-            Console.SetError(_fstreamwriter);
+            fstream = new FileStream(logFilePath, FileMode.Create);
+            fstreamwriter = new StreamWriter(fstream);
+            Console.SetOut(fstreamwriter);
+            Console.SetError(fstreamwriter);
         }
 
         /// <summary> Stops console redirection. </summary>
-        public void Stop() {
+        public void Stop()
+        {
             Console.SetOut(ConsoleStdOutput);
             Console.SetError(ConsoleErrOutput);
-            _fstreamwriter?.Close();
-            _fstream?.Close();
+            fstreamwriter?.Close();
+            fstream?.Close();
         }
 
         /// <summary> Creates log directory. </summary>
-        public void CreateLogDirectory() {
+        public void CreateLogDirectory()
+        {
             if (Directory.Exists("logs") == false) Directory.CreateDirectory("logs");
         }
     }
