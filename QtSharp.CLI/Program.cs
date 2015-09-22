@@ -32,6 +32,9 @@ namespace QtSharp.CLI
                 return -1;
             }
 
+            ConsoleLogger logredirect = new ConsoleLogger();
+            logredirect.CreateLogDirectory();
+
             string path = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
             path = Path.GetDirectoryName(make) + Path.PathSeparator + path;
             Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Process);
@@ -95,6 +98,9 @@ namespace QtSharp.CLI
             var wrappedModules = new List<KeyValuePair<string, string>>(modules.Count);
             foreach (var libFile in libFiles.Where(libFile => modules.Contains(libFile)))
             {
+                logredirect.SetLogFile(libFile.Replace(".dll", "") + "Log.txt");
+                logredirect.Start();
+
                 var qtSharp = new QtSharp(qmake, make, headers, libs, libFile, target, systemIncludeDirs, docs);
                 ConsoleDriver.Run(qtSharp);
                 if (File.Exists(qtSharp.LibraryName) && File.Exists(Path.Combine("release", qtSharp.InlinesLibraryName)))
@@ -102,6 +108,8 @@ namespace QtSharp.CLI
                     wrappedModules.Add(new KeyValuePair<string, string>(qtSharp.LibraryName, qtSharp.InlinesLibraryName));
                 }
             }
+
+            logredirect.Stop();
 
 #if DEBUG
             if (File.Exists("../../../QtSharp.Tests/bin/Debug/QtCore-inlines.dll"))
