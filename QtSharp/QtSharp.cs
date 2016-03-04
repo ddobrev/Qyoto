@@ -177,9 +177,12 @@ namespace QtSharp
             driver.Options.GenerateConversionOperators = true;
             driver.Options.MarshalCharAsManagedChar = true;
             driver.Options.Headers.Add(qtModule);
-            foreach (var systemIncludeDir in this.systemIncludeDirs)
-            {
-                driver.Options.addSystemIncludeDirs(systemIncludeDir);
+
+			foreach (var systemIncludeDir in this.systemIncludeDirs)
+			{
+				driver.Options.addSystemIncludeDirs(systemIncludeDir);
+			}
+
             if (Platform.IsMacOS)
             {
                 foreach (var frameworkDir in this.frameworkDirs)
