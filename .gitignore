@@ -31,3 +31,8 @@ $tf*/
 #Nuget downloaded files
 packages/
 deps/
+
+# Site build files
+/Docs/Doxygen/html
+/Docs/MkDocs/site
+/Docs/MkDocs/Docs/doxygen

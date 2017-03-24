@@ -9,15 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QtSharp.CLI", "QtSharp.CLI\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QtSharp.Tests", "QtSharp.Tests\QtSharp.Tests.csproj", "{5E8F503D-1B37-4298-855D-06F81B5B4630}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{345349CF-F2FF-407A-A38E-A3816616208A}"
-	ProjectSection(SolutionItems) = preProject
-		Docs\1. Building - QtSharp.md = Docs\1. Building - QtSharp.md
-		Docs\2. Running - QtSharp.CLI.md = Docs\2. Running - QtSharp.CLI.md
-		Docs\3. Running - NUnit Tests.md = Docs\3. Running - NUnit Tests.md
-		Docs\4. Building - CppSharp.md = Docs\4. Building - CppSharp.md
-		Docs\5. Building - UiTools.md = Docs\5. Building - UiTools.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
