@@ -1,0 +1,36 @@
+site_name: QtSharp
+site_url: http://ddobrev.github.io/QtSharp
+repo_url: https://github.com/ddobrev/QtSharp
+#site_url: http://grbd.github.io/QtSharp
+#repo_url: https://github.com/grbd/QtSharp
+site_description: QtSharp - Qt bindings for C#
+edit_uri: edit/master/Docs/MkDocs/Docs
+
+pages:
+- Home: index.md
+- Download:
+    - Download QtSharp: Download\Download.md
+    - Qt Install Windows: Download\Qt-Install-Win.md
+
+- Windows Build:
+    - Qt 5.8.0 Patches: Win-Build\Qt-5.8.0-Patches.md
+    - QtSharp Build: Win-Build\QtSharp-Build-Win.md
+    - QtSharp Tests: Win-Build\QtSharp-Tests-Win.md
+
+#theme: cosmo
+theme: cyborg
+#theme: alabaster
+#theme: readthedocs
+#theme: mkdocs
+#theme: material
+
+# Overrides content within the selected theme
+theme_dir: theme
+
+markdown_extensions:
+    - smarty
+
+extra_css:
+    - css/highlight-fix.css
+    - css/highlight-custom.css
+    - css/navbarfix.css
