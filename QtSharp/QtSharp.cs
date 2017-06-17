@@ -176,13 +176,13 @@ namespace QtSharp
                 if (Platform.IsMacOS)
                 {
                     var framework = $"{qtModule}.framework";
-                    module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, framework));
                     module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, framework, "Headers"));
+                    module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, framework));
                     if (moduleName == "UiPlugin")
                     {
                         var qtUiPlugin = $"Qt{moduleName}.framework";
-                        module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin));
                         module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin, "Headers"));
+                        module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin));
                     }
                 }
                 else
@@ -213,7 +213,7 @@ namespace QtSharp
 
             foreach (var systemIncludeDir in this.qtInfo.SystemIncludeDirs)
                 driver.ParserOptions.AddSystemIncludeDirs(systemIncludeDir);
-            
+
             if (Platform.IsMacOS)
             {
                 foreach (var frameworkDir in this.qtInfo.FrameworkDirs)
@@ -225,8 +225,11 @@ namespace QtSharp
 
             driver.ParserOptions.AddLibraryDirs(Platform.IsWindows ? qtInfo.Bins : qtInfo.Libs);
 
-            // Qt defines its own GUID with the same header guard as the system GUID, so ensure the system GUID is read first
-            driver.Project.AddFile("guiddef.h");
+            if (Platform.IsWindows)
+            {
+                // Qt defines its own GUID with the same header guard as the system GUID, so ensure the system GUID is read first
+                driver.Project.AddFile("guiddef.h");
+            }
         }
 
         public static string GetModuleNameFromLibFile(string libFile)
@@ -236,6 +239,11 @@ namespace QtSharp
             {
                 return "Qt" + qtModule.Substring("Qt".Length + 1);
             }
+            if (Platform.IsMacOS)
+            {
+                return libFile;
+            }
+
             return libFile.Substring("lib".Length);
         }
 
