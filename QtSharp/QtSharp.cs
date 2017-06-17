@@ -177,14 +177,14 @@ namespace QtSharp
                 {
                     var framework = $"{qtModule}.framework";
                     module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, framework, "Headers"));
-					module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, framework));
-					if (moduleName == "UiPlugin")
+                    module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, framework));
+                    if (moduleName == "UiPlugin")
                     {
                         var qtUiPlugin = $"Qt{moduleName}.framework";
                         module.IncludeDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin, "Headers"));
-						module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin));
-					}
-				}
+                        module.LibraryDirs.Add(Path.Combine(this.qtInfo.Libs, qtUiPlugin));
+                    }
+                }
                 else
                 {
                     var moduleInclude = Path.Combine(qtInfo.Headers, qtModule);
@@ -225,11 +225,11 @@ namespace QtSharp
 
             driver.ParserOptions.AddLibraryDirs(Platform.IsWindows ? qtInfo.Bins : qtInfo.Libs);
 
-			if (Platform.IsWindows)
-			{
-				// Qt defines its own GUID with the same header guard as the system GUID, so ensure the system GUID is read first
-				driver.Project.AddFile("guiddef.h");
-			}
+            if (Platform.IsWindows)
+            {
+                // Qt defines its own GUID with the same header guard as the system GUID, so ensure the system GUID is read first
+                driver.Project.AddFile("guiddef.h");
+            }
         }
 
         public static string GetModuleNameFromLibFile(string libFile)
@@ -239,12 +239,12 @@ namespace QtSharp
             {
                 return "Qt" + qtModule.Substring("Qt".Length + 1);
             }
-			if (Platform.IsMacOS)
-			{
-				return libFile;
-			}
+            if (Platform.IsMacOS)
+            {
+                return libFile;
+            }
 
-			return libFile.Substring("lib".Length);
+            return libFile.Substring("lib".Length);
         }
 
         public void SetupPasses(Driver driver)
