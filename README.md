@@ -3,8 +3,7 @@ QtSharp
 
 Mono/.NET bindings for Qt
 
-This project aims to create Mono/.NET libraries that wrap Qt (https://qt-project.org/) thus enabling its usage through C#.
-It relies on the excellent CppSharp (https://github.com/mono/CppSharp).
+This project aims to create Mono/.NET libraries that wrap Qt (https://qt-project.org/) thus enabling its usage through C#, F#, Visual Basic and any other .NET language. It relies on the excellent CppSharp (https://github.com/mono/CppSharp). 
 It is a generator that expects the include and library directories of a Qt set-up and then generates and compiles the wrappers.
 While still in development, it should work with any Qt version when complete.
 There is no Qt included in the repository, users have to download and install Qt themselves.
@@ -21,7 +20,7 @@ As they get more stable, binaries for other operating systems will be added as w
 
 You need to deploy Qt itself by following http://doc.qt.io/qt-5/windows-deployment.html#application-dependencies .
 In addition, for each Qt module you use you also need Qt<module>-inlines.dll deployed alongside your executable.
-You can use QtSharp with any C# IDE, including Visual Studio, but make sure your executable is 32-bit by either using the
+You can use QtSharp with any .NET IDE, including Visual Studio, but make sure your executable is 32-bit by either using the
 x86 configuration or AnyCPU with "Prefer 32-bit" checked.
 
 ## Examples
