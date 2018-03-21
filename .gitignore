@@ -31,3 +31,6 @@ $tf*/
 #Nuget downloaded files
 packages/
 deps/
+
+# Visual Studio 2017 Solution files
+.vs/

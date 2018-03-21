@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using CppSharp;
-using CppSharp.Utils;
 
 namespace QtSharp.CLI
 {
     public class Program
     {
-        static int ParseArgs(string[] args, out string qmake, out string make, out bool debug)
+        private static int ParseArgs(string[] args, out string qmake, out string make, out bool debug)
         {
             qmake = null;
             make = null;
@@ -44,117 +40,10 @@ namespace QtSharp.CLI
             return 0;
         }
 
-        static List<QtInfo> FindQt()
-        {
-            var home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var qts = new List<QtInfo>();
-
-            var qtPath = Path.Combine(home, "Qt");
-            if (!Directory.Exists(qtPath))
-            {
-                return new List<QtInfo>();
-            }
-
-            foreach (var path in Directory.EnumerateDirectories(qtPath))
-            {
-                var dir = Path.GetFileName(path);
-                bool isNumber = dir.All(c => char.IsDigit(c) || c == '.');
-                if (!isNumber)
-                    continue;
-                var qt = new QtInfo { Path = path };
-                var match = Regex.Match(dir, @"([0-9]+)\.([0-9]+)");
-                if (!match.Success)
-                    continue;
-                qt.MajorVersion = int.Parse(match.Groups[1].Value);
-                qt.MinorVersion = int.Parse(match.Groups[2].Value);
-                qts.Add(qt);
-            }
-
-            return qts;
-        }
-
-        static bool QueryQt(QtInfo qt, bool debug)
-        {
-            // check for OS X
-            if (string.IsNullOrWhiteSpace(qt.QMake))
-            {
-                qt.QMake = Path.Combine(qt.Path, "clang_64/bin/qmake");
-            }
-            if (string.IsNullOrWhiteSpace(qt.Make))
-            {
-                qt.Make = "/usr/bin/make";
-            }
-
-            string path = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
-            path = Path.GetDirectoryName(qt.Make) + Path.PathSeparator + path;
-            Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Process);
-
-            int error;
-            string errorMessage;
-            qt.Bins = ProcessHelper.Run(qt.QMake, "-query QT_INSTALL_BINS", out error, out errorMessage);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                Console.WriteLine(errorMessage);
-                return false;
-            }
-
-            qt.Libs = ProcessHelper.Run(qt.QMake, "-query QT_INSTALL_LIBS", out error, out errorMessage);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                Console.WriteLine(errorMessage);
-                return false;
-            }
-
-            DirectoryInfo libsInfo = new DirectoryInfo(Platform.IsWindows ? qt.Bins : qt.Libs);
-            if (!libsInfo.Exists)
-            {
-                Console.WriteLine(
-                    "The directory \"{0}\" that qmake returned as the lib directory of the Qt installation, does not exist.",
-                    libsInfo.Name);
-                return false;
-            }
-            qt.LibFiles = GetLibFiles(libsInfo, debug);
-            qt.Headers = ProcessHelper.Run(qt.QMake, "-query QT_INSTALL_HEADERS", out error, out errorMessage);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                Console.WriteLine(errorMessage);
-                return false;
-            }
-            DirectoryInfo headersInfo = new DirectoryInfo(qt.Headers);
-            if (!headersInfo.Exists)
-            {
-                Console.WriteLine(
-                    "The directory \"{0}\" that qmake returned as the header direcory of the Qt installation, does not exist.",
-                    headersInfo.Name);
-                return false;
-            }
-            qt.Docs = ProcessHelper.Run(qt.QMake, "-query QT_INSTALL_DOCS", out error, out errorMessage);
-
-            string emptyFile = Platform.IsWindows ? "NUL" : "/dev/null";
-            string output;
-            ProcessHelper.Run("gcc", $"-v -E -x c++ {emptyFile}", out error, out output);
-            qt.Target = Regex.Match(output, @"Target:\s*(?<target>[^\r\n]+)").Groups["target"].Value;
-
-            const string includeDirsRegex = @"#include <\.\.\.> search starts here:(?<includes>.+)End of search list";
-            string allIncludes = Regex.Match(output, includeDirsRegex, RegexOptions.Singleline).Groups["includes"].Value;
-            var includeDirs = allIncludes.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim()).ToList();
-
-            const string frameworkDirectory = "(framework directory)";
-            qt.SystemIncludeDirs = includeDirs.Where(s => !s.Contains(frameworkDirectory))
-                .Select(Path.GetFullPath);
-
-            if (Platform.IsMacOS)
-                qt.FrameworkDirs = includeDirs.Where(s => s.Contains(frameworkDirectory))
-                    .Select(s => s.Replace(frameworkDirectory, string.Empty).Trim()).Select(Path.GetFullPath);
-
-            return true;
-        }
-
         public static int Main(string[] args)
         {
             Stopwatch s = Stopwatch.StartNew();
-            var qts = FindQt();
+            var qts = QtInfo.FindQt();
             bool found = qts.Count != 0;
             bool debug = false;
             QtInfo qt;
@@ -178,7 +67,7 @@ namespace QtSharp.CLI
             if (logredirect != null)
                 logredirect.CreateLogDirectory();
 
-            if (!QueryQt(qt, debug))
+            if (!qt.Query(debug))
                 return 1;
 
             for (int i = qt.LibFiles.Count - 1; i >= 0; i--)
@@ -223,36 +112,6 @@ namespace QtSharp.CLI
             }
             Console.WriteLine("Done in: " + s.Elapsed);
             return 0;
-        }
-
-        private static IList<string> GetLibFiles(DirectoryInfo libsInfo, bool debug)
-        {
-            List<string> modules;
-            
-            if (Platform.IsMacOS)
-            {
-                modules = libsInfo.EnumerateDirectories("*.framework").Select(dir => Path.GetFileNameWithoutExtension(dir.Name)).ToList();
-            }
-            else
-            {
-                modules = (from file in libsInfo.EnumerateFiles()
-                           where Regex.IsMatch(file.Name, @"^Qt\d?\w+\.\w+$")
-                           select file.Name).ToList();
-            }                
-
-            for (var i = modules.Count - 1; i >= 0; i--)
-            {
-                var module = Path.GetFileNameWithoutExtension(modules[i]);
-                if (debug && module != null && !module.EndsWith("d", StringComparison.Ordinal))
-                {
-                    modules.Remove(module + Path.GetExtension(modules[i]));                    
-                }
-                else
-                {
-                    modules.Remove(module + "d" + Path.GetExtension(modules[i]));                    
-                }
-            }
-            return modules;
         }
     }
 }
