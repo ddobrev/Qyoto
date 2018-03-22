@@ -4,11 +4,18 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using CppSharp;
+using QtSharp.CLI.Helpers;
+using QtSharp.CLI.Logging;
 
 namespace QtSharp.CLI
 {
     public class Program
     {
+        /// <summary> Gets the LibLog logger instance. </summary>
+        /// <value> LibLog Logger. </value>
+        private static ILog Log => _Log ?? (_Log = LogProvider.GetCurrentClassLogger());
+        private static ILog _Log;
+
         private static int ParseArgs(string[] args, out string qmake, out string make, out bool debug)
         {
             qmake = null;
@@ -62,10 +69,12 @@ namespace QtSharp.CLI
                 qt = qts.Last();
             }
 
-            bool log = false;
-            ConsoleLogger logredirect = log ? new ConsoleLogger() : null;
-            if (logredirect != null)
-                logredirect.CreateLogDirectory();
+            // Setup Logging with SeriLog
+            SerilogSetup.SetupLogging();
+            // Workaround to redirect Console.WriteLine through Liblog / Serilog
+            ConsoleRedirect.Start();
+            Log.Info("QtSharp Starting");
+
 
             if (!qt.Query(debug))
                 return 1;
@@ -87,15 +96,13 @@ namespace QtSharp.CLI
 
             if (wrappedModules.Count == 0)
             {
-                Console.WriteLine("Generation failed.");
+                Log.Error("Generation failed.");
                 return 1;
             }
 
             const string qtSharpZip = "QtSharp.zip";
-            if (File.Exists(qtSharpZip))
-            {
-                File.Delete(qtSharpZip);
-            }
+            if (File.Exists(qtSharpZip)) File.Delete(qtSharpZip);
+            
             using (var zip = File.Create(qtSharpZip))
             {
                 using (var zipArchive = new ZipArchive(zip, ZipArchiveMode.Create))
@@ -110,7 +117,9 @@ namespace QtSharp.CLI
                     zipArchive.CreateEntryFromFile("CppSharp.Runtime.dll", "CppSharp.Runtime.dll");
                 }
             }
-            Console.WriteLine("Done in: " + s.Elapsed);
+            Log.Info("Done in: " + s.Elapsed);
+            Log.Info("QtSharp Finished");
+            ConsoleRedirect.Stop();
             return 0;
         }
     }
