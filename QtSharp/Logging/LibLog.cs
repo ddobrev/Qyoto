@@ -41,15 +41,15 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "QtSharp.CLI.Logging")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "QtSharp.CLI.Logging.Logger.#Invoke(QtSharp.CLI.Logging.LogLevel,System.Func`1<System.String>,System.Exception,System.Object[])")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "QtSharp.Logging")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "QtSharp.Logging.Logger.#Invoke(QtSharp.Logging.LogLevel,System.Func`1<System.String>,System.Exception,System.Object[])")]
 
 // If you copied this file manually, you need to change all "YourRootNameSpace" so not to clash with other libraries
 // that use LibLog
 #if LIBLOG_PROVIDERS_ONLY
-namespace QtSharp.CLI.LibLog
+namespace QtSharp.LibLog
 #else
-namespace QtSharp.CLI.Logging
+namespace QtSharp.Logging
 #endif
 {
     using System.Collections.Generic;
@@ -864,9 +864,9 @@ namespace QtSharp.CLI.Logging
 }
 
 #if LIBLOG_PROVIDERS_ONLY
-namespace QtSharp.CLI.LibLog.LogProviders
+namespace QtSharp.LibLog.LogProviders
 #else
-namespace QtSharp.CLI.Logging.LogProviders
+namespace QtSharp.Logging.LogProviders
 #endif
 {
     using System;

@@ -58,6 +58,7 @@
     <Reference Include="HtmlAgilityPack, Version=1.7.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.7.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
@@ -93,6 +94,7 @@
     <Compile Include="GenerateSignalEventsPass.cs" />
     <Compile Include="GetCommentsFromQtDocsPass.cs" />
     <Compile Include="DocGeneration\MemberDocumentationNode.cs" />
+    <Compile Include="Logging\LibLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="QEvent.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

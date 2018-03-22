@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace QtSharp.CLI.Helpers
 {
@@ -9,19 +11,35 @@ namespace QtSharp.CLI.Helpers
         /// <summary> Full pathname of the log file. </summary>
         public static string LogFilePath = @"logs\qtsharp1.txt";
 
-        /// <summary> Sets up Logging. </summary>
-        public static void SetupLogging()
+        /// <summary> Setup logging without a Dttm. </summary>
+        public static Serilog.Core.Logger GetLogger_Nodttm()
         {
+            var outputTemplate = "{Message:lj}{NewLine}{Exception}";
+            var theme = AnsiConsoleTheme.Code;
+
             // Setup Serilog Configuration
             var serilogcfg = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console();
+                .WriteTo.Console(outputTemplate: outputTemplate, theme: theme);
+
+            return serilogcfg.CreateLogger();
+        }
+
+        /// <summary> Setup logging with a Dttm. </summary>
+        public static Serilog.Core.Logger GetLogger_dttm()
+        { 
+            var outputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+            var theme = AnsiConsoleTheme.Code;
+
+            // Setup Serilog Configuration
+            var serilogcfg = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Console(outputTemplate: outputTemplate, theme: theme);
 
             // Optionally add in file logging
-            //SetupFileLogging(serilogcfg);
+            SetupFileLogging(serilogcfg);
 
-            // Create the logger
-            Log.Logger = serilogcfg.CreateLogger();
+            return serilogcfg.CreateLogger();
         }
 
         /// <summary> Sets up logging for file output. </summary>
@@ -33,7 +51,7 @@ namespace QtSharp.CLI.Helpers
             string fullpath = Path.Combine(Directory.GetCurrentDirectory(), LogFilePath);
             // Create the logging output directory
             string logdir = Path.GetDirectoryName(fullpath);
-            if (Directory.Exists(logdir) == false) Directory.CreateDirectory(logdir);
+            if (Directory.Exists(logdir) == false) Directory.CreateDirectory(logdir ?? throw new InvalidOperationException());
             // Setup Serilog
             serilogcfg.WriteTo.File(fullpath);
         }

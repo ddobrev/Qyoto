@@ -12,6 +12,7 @@ using CppSharp.Generators;
 using CppSharp.Generators.CSharp;
 using HtmlAgilityPack;
 using Mono.Data.Sqlite;
+using QtSharp.Logging;
 using zlib;
 using Attribute = CppSharp.AST.Attribute;
 
@@ -19,6 +20,11 @@ namespace QtSharp.DocGeneration
 {
     public class Documentation
     {
+        /// <summary> Gets the LibLog logger instance. </summary>
+        /// <value> LibLog Logger. </value>
+        private static ILog Log => _Log ?? (_Log = LogProvider.GetCurrentClassLogger());
+        private static ILog _Log;
+
         public Documentation(string docsPath, IEnumerable<string> modules)
         {
             // HACK: work around https://bugreports.qt.io/browse/QTBUG-54025
@@ -674,7 +680,7 @@ namespace QtSharp.DocGeneration
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Documentation generation failed: {0}", ex.Message);
+                Log.Error("Documentation generation failed: {0}", ex.Message);
                 return new Dictionary<string, string>();
             }
         }

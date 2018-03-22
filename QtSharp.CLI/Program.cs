@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -24,21 +23,21 @@ namespace QtSharp.CLI
 
             if (args.Length < 2)
             {
-               Console.WriteLine("Please enter the paths to qmake and make.");
+               Log.Error("Please enter the paths to qmake and make.");
                return 1;
             }
 
             qmake = args [0];
             if (!File.Exists(qmake))
             {
-                Console.WriteLine("The specified qmake does not exist.");
+                Log.Error("The specified qmake does not exist.");
                 return 1;
             }
 
             make = args [1];
             if (!File.Exists(make))
             {
-               Console.WriteLine("The specified make does not exist.");
+               Log.Error("The specified make does not exist.");
                return 1;
             }
 
@@ -49,6 +48,14 @@ namespace QtSharp.CLI
 
         public static int Main(string[] args)
         {
+            // Setup Logging with SeriLog
+            // remove timestamp etc for while we're parsing command line args / input etc
+            var logger = SerilogSetup.GetLogger_Nodttm();
+            Serilog.Log.Logger = logger;
+
+            // Workaround to redirect Console.WriteLine through Liblog / Serilog
+            ConsoleRedirect.Start();
+
             Stopwatch s = Stopwatch.StartNew();
             var qts = QtInfo.FindQt();
             bool found = qts.Count != 0;
@@ -69,13 +76,13 @@ namespace QtSharp.CLI
                 qt = qts.Last();
             }
 
-            // Setup Logging with SeriLog
-            SerilogSetup.SetupLogging();
-            // Workaround to redirect Console.WriteLine through Liblog / Serilog
-            ConsoleRedirect.Start();
+            // Re-setup logging with default template including timestamp / log level
+            logger.Dispose();
+            logger = SerilogSetup.GetLogger_dttm();
+            Serilog.Log.Logger = logger;
+            _Log = LogProvider.GetCurrentClassLogger();
+
             Log.Info("QtSharp Starting");
-
-
             if (!qt.Query(debug))
                 return 1;
 

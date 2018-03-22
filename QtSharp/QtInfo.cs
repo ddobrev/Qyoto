@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using CppSharp.Utils;
 using CppSharp;
+using QtSharp.Logging;
 
 namespace QtSharp
 {
@@ -24,6 +25,11 @@ namespace QtSharp
         public IList<string> LibFiles;
         public IEnumerable<string> SystemIncludeDirs;
         public IEnumerable<string> FrameworkDirs;
+
+        /// <summary> Gets the LibLog logger instance. </summary>
+        /// <value> LibLog Logger. </value>
+        private static ILog Log => _Log ?? (_Log = LogProvider.GetCurrentClassLogger());
+        private static ILog _Log;
 
         /// <summary> Searches for QT on the system. </summary>
         /// <returns> List of found QT installs. </returns>
@@ -78,21 +84,21 @@ namespace QtSharp
             Bins = ProcessHelper.Run(QMake, "-query QT_INSTALL_BINS", out var error, out var errorMessage);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.WriteLine(errorMessage);
+                Log.Error(errorMessage);
                 return false;
             }
 
             Libs = ProcessHelper.Run(QMake, "-query QT_INSTALL_LIBS", out error, out errorMessage);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.WriteLine(errorMessage);
+                Log.Error(errorMessage);
                 return false;
             }
 
             DirectoryInfo libsInfo = new DirectoryInfo(Platform.IsWindows ? Bins : Libs);
             if (!libsInfo.Exists)
             {
-                Console.WriteLine(
+                Log.Error(
                     "The directory \"{0}\" that qmake returned as the lib directory of the Qt installation, does not exist.",
                     libsInfo.Name);
                 return false;
@@ -101,13 +107,13 @@ namespace QtSharp
             Headers = ProcessHelper.Run(QMake, "-query QT_INSTALL_HEADERS", out error, out errorMessage);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.WriteLine(errorMessage);
+                Log.Error(errorMessage);
                 return false;
             }
             DirectoryInfo headersInfo = new DirectoryInfo(Headers);
             if (!headersInfo.Exists)
             {
-                Console.WriteLine(
+                Log.Error(
                     "The directory \"{0}\" that qmake returned as the header direcory of the Qt installation, does not exist.",
                     headersInfo.Name);
                 return false;
