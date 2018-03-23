@@ -81,7 +81,10 @@ namespace QtSharp
             path = Path.GetDirectoryName(Make) + Path.PathSeparator + path;
             Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Process);
 
-            Bins = ProcessHelper.Run(QMake, "-query QT_INSTALL_BINS", out var error, out var errorMessage);
+
+            int error;
+            string errorMessage;
+            Bins = ProcessHelper.Run(QMake, "-query QT_INSTALL_BINS", out error, out errorMessage);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 Log.Error(errorMessage);
@@ -121,7 +124,8 @@ namespace QtSharp
             Docs = ProcessHelper.Run(QMake, "-query QT_INSTALL_DOCS", out error, out errorMessage);
 
             string emptyFile = Platform.IsWindows ? "NUL" : "/dev/null";
-            ProcessHelper.Run("gcc", $"-v -E -x c++ {emptyFile}", out error, out var output);
+            string output;
+            ProcessHelper.Run("gcc", $"-v -E -x c++ {emptyFile}", out error, out output);
             Target = Regex.Match(output, @"Target:\s*(?<target>[^\r\n]+)").Groups["target"].Value;
 
             const string includeDirsRegex = @"#include <\.\.\.> search starts here:(?<includes>.+)End of search list";

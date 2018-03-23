@@ -51,7 +51,9 @@ namespace QtSharp.CLI.Helpers
             string fullpath = Path.Combine(Directory.GetCurrentDirectory(), LogFilePath);
             // Create the logging output directory
             string logdir = Path.GetDirectoryName(fullpath);
-            if (Directory.Exists(logdir) == false) Directory.CreateDirectory(logdir ?? throw new InvalidOperationException());
+            if (Directory.Exists(logdir) == false)
+                if (logdir != null)
+                    Directory.CreateDirectory(logdir);
             // Setup Serilog
             serilogcfg.WriteTo.File(fullpath);
         }
