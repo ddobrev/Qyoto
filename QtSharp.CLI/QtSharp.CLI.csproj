@@ -112,7 +112,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ConsoleRedirect.cs" />
+    <Compile Include="Helpers\CppSharpLog.cs" />
     <Compile Include="Helpers\LibLog.cs" />
     <Compile Include="Helpers\SerilogSetup.cs" />
     <Compile Include="Program.cs" />

@@ -52,9 +52,8 @@ namespace QtSharp.CLI
             // remove timestamp etc for while we're parsing command line args / input etc
             var logger = SerilogSetup.GetLogger_Nodttm();
             Serilog.Log.Logger = logger;
-
-            // Workaround to redirect Console.WriteLine through Liblog / Serilog
-            ConsoleRedirect.Start();
+            // Setup CppSharp Log
+            Diagnostics.Implementation = new CppSharpLog();
 
             Stopwatch s = Stopwatch.StartNew();
             var qts = QtInfo.FindQt();
@@ -81,6 +80,8 @@ namespace QtSharp.CLI
             logger = SerilogSetup.GetLogger_dttm();
             Serilog.Log.Logger = logger;
             _Log = LogProvider.GetCurrentClassLogger();
+            // Setup CppSharp Log
+            Diagnostics.Implementation = new CppSharpLog();
 
             Log.Info("QtSharp Starting");
             if (!qt.Query(debug))
@@ -126,7 +127,6 @@ namespace QtSharp.CLI
             }
             Log.Info("Done in: " + s.Elapsed);
             Log.Info("QtSharp Finished");
-            ConsoleRedirect.Stop();
             return 0;
         }
     }
