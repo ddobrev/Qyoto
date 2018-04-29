@@ -328,6 +328,10 @@ namespace QtSharp.DocGeneration
                             if (function.IsVariadic && @params.Count == i || match.Groups[1].Value == "void")
                                 break;
                             var param = csharpSources.SafeIdentifier(match.Groups[1].Value);
+			    
+			    if (i >= @params.Count) {
+				 break;
+			    }
                             @params[i].Name = param;
                             if (function.IsDependent && function is Method && function.Namespace.IsDependent)
                             {
