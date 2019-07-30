@@ -10,12 +10,18 @@ using CppSharp.AST.Extensions;
 using CppSharp.Generators;
 using CppSharp.Passes;
 using CppSharp.Utils;
+using QtSharp.Logging;
 using CppAbi = CppSharp.Parser.AST.CppAbi;
 
 namespace QtSharp
 {
     public class QtSharp : ILibrary
     {
+        /// <summary> Gets the LibLog logger instance. </summary>
+        /// <value> LibLog Logger. </value>
+        private static ILog Log => _Log ?? (_Log = LogProvider.GetCurrentClassLogger());
+        private static ILog _Log;
+
         public QtSharp(QtInfo qtInfo)
         {
             this.qtInfo = qtInfo;
@@ -100,7 +106,7 @@ namespace QtSharp
             var modules = this.qtInfo.LibFiles.Select(l => GetModuleNameFromLibFile(l));
             var s = System.Diagnostics.Stopwatch.StartNew();
             new GetCommentsFromQtDocsPass(this.qtInfo.Docs, modules).VisitASTContext(driver.Context.ASTContext);
-            System.Console.WriteLine("Documentation done in: {0}", s.Elapsed);
+            Log.Info("Documentation done in: {0}", s.Elapsed);
 
             var qChar = lib.FindCompleteClass("QChar");
             var op = qChar.FindOperator(CXXOperatorKind.ExplicitConversion)
@@ -298,7 +304,7 @@ namespace QtSharp
             ProcessHelper.Run(this.qtInfo.QMake, $"\"{path}\"", out error, out errorMessage);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.WriteLine(errorMessage);
+                Log.Error(errorMessage);
                 return;
             }
             var makefile = File.Exists(Path.Combine(e.OutputDir, "Makefile.Release")) ? "Makefile.Release" : "Makefile";
